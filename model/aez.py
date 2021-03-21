@@ -104,12 +104,23 @@ class AEZ(DataHandler, object, metaclass=MetaclassCache):
         """
         self.world_land_alloc_dict = {}
         subdir = '2020' if len(self.regimes) == 8 else '2018'
+
+        # TODO(jhslinkman): Calculation of totals_by_regime_and_aez should live
+        # elsewhere, eventually, because it is independent of solution type
+        # and this logic gets run once per solution.
+        totals_by_regime_and_aez = []
+
         for tmr in self.regimes:
             df = pd.read_csv(LAND_CSV_PATH.joinpath('world', subdir,
                     self._to_filename(tmr) + '.csv'), index_col=0).drop('Total Area (km2)', 1)
+            totals_by_regime_and_aez.append((tmr, df.loc['TOTAL']))
+
             # apply fixed world fraction to each region
             self.world_land_alloc_dict[tmr] = df.mul(self.soln_land_alloc_df.loc[tmr],
                     axis=1) / 10000
+
+        self.land_area_by_regime_and_aez = pd.concat([df for _, df in totals_by_regime_and_aez], axis=1).T
+        self.land_area_by_regime_and_aez.index = pd.Index([regime for regime, _ in totals_by_regime_and_aez])
 
 
     def _populate_solution_land_distribution(self):
