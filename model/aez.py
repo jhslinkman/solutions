@@ -103,11 +103,13 @@ class AEZ(DataHandler, object, metaclass=MetaclassCache):
            'AEZ Data'!D353:AG610
         """
         self.world_land_alloc_dict = {}
+        self.our_land_alloc_dict = {}
         subdir = '2020' if len(self.regimes) == 8 else '2018'
         for tmr in self.regimes:
             df = pd.read_csv(LAND_CSV_PATH.joinpath('world', subdir,
                     self._to_filename(tmr) + '.csv'), index_col=0).drop('Total Area (km2)', 1)
             # apply fixed world fraction to each region
+            self.our_land_alloc_dict[tmr] = df
             self.world_land_alloc_dict[tmr] = df.mul(self.soln_land_alloc_df.loc[tmr],
                     axis=1) / 10000
 
