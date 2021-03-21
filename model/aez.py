@@ -54,6 +54,25 @@ class AEZ(DataHandler, object, metaclass=MetaclassCache):
         """Returns relevant land data for Unit Adoption module"""
         return self.soln_land_dist_df
 
+    @data_func
+    def get_world_land_data(self):
+        """DataFrame for looking up land area by AEZ and TMR
+
+        E.g:
+
+                            AEZ1: Forest, good, minimal   AEZ2: Forest, marginal, minimal
+        tropical-humid      915.0                         183.4
+        temperate-humid     201.2                          34.2
+        boreal-humid        503.2                         131.5
+        tropical-semiarid    75.5                          20.9
+        temperate-semiarid   10.7                           7.1
+        boreal-semiarid      46.0                          19.5
+        global arid          16.1                           4.3
+        global arctic         1.3                           0.6
+
+        """
+        return self.land_area_by_regime_and_aez
+
     def _to_filename(self, name):
         """Removes special characters and separates words with single underscores"""
         return re.sub(' +', '_', re.sub('[^a-zA-Z0-9' '\n]', ' ', name)).strip('_')
